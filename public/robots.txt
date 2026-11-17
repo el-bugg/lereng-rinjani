@@ -1,0 +1,3 @@
+# Review preview must not be indexed. Change this after production approval.
+User-agent: *
+Disallow: /

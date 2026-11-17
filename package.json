@@ -1,18 +1,38 @@
 {
-  "name": "lereng-rinjani-web",
-  "version": "1.0.0",
+  "name": "lereng-rinjani-motion-preview",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node server.mjs"
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "start": "node preview-server.mjs",
+    "test:api": "node --test tests/preview-api.test.mjs",
+    "test:browser": "node tests/browser-check.mjs"
   },
   "dependencies": {
-    "pg": "^8.13.1"
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@tailwindcss/vite": "^4.1.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.468.0",
+    "motion": "^12.23.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "tailwind-merge": "^3.2.0",
+    "tailwindcss": "^4.1.0",
+    "vite": "^7.1.0",
+    "@vitejs/plugin-react": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "typescript": "^5.8.0",
+    "playwright": "^1.56.0"
   },
   "engines": {
     "node": ">=22.13.0"
-  },
-  "devDependencies": {
-    "playwright": "^1.56.0"
   }
 }
