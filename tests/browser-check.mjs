@@ -52,6 +52,8 @@ try{
    await page.locator('#hero-title').waitFor({timeout:20000})
    await page.locator('.product-card').first().waitFor({timeout:20000})
    await layout(page,label+'/beranda')
+   if(vp.width>930 && await page.getByRole('button',{name:'Buka menu'}).isVisible())issues.push(`${label}: desktop navigation shows duplicate mobile hamburger`)
+   if(vp.width<=740 && !(await page.locator('.field-notes').isVisible()))issues.push(`${label}: origin photo card missing on mobile`)
    if(['small-320','android-390','tablet-768','desktop-1440','desktop-1920','wide-2560'].includes(label)){
     await page.screenshot({path:`screenshots/${label}.png`,fullPage:true})
    }
