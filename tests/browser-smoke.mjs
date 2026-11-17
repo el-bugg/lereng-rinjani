@@ -24,6 +24,10 @@ try{
  const desktop=await browser.newContext({viewport:{width:1440,height:900}});
  const page=await desktop.newPage();const res=await page.goto(url,{waitUntil:'networkidle',timeout:90000});if(res.status()!==200)throw Error('Homepage HTTP '+res.status());
  await page.locator('h1').first().waitFor();if(!await page.locator('.links a').first().isVisible())throw Error('Desktop menu hidden');
+ const photoLoaded=await page.locator('.hero-photo img').evaluate(img=>img.complete&&img.naturalWidth>0&&img.currentSrc.includes('/assets/img/foto2.jpg'));
+ if(!photoLoaded)throw Error('Original hero image did not load');
+ const productsLoaded=await page.locator('.product-image img').evaluateAll(imgs=>imgs.length>=2&&imgs.every(img=>img.complete&&img.naturalWidth>0&&img.currentSrc.includes('/assets/img/')));
+ if(!productsLoaded)throw Error('Original product images did not load');
  await page.screenshot({path:'screenshots/desktop.png',fullPage:true});
  await page.locator('[data-add="arabika"]').first().click();
  if(await page.locator('#cart-count').textContent()!=='1')throw Error('Cart did not update');
