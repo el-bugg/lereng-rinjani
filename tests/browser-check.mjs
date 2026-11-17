@@ -27,7 +27,7 @@ try{
    const extra=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
    if(extra>2)problems.push(`${size.name}: route ${route} overflow ${extra}px`)
   }
-  await page.goto(base+'/admin.html',{waitUntil:'domcontentloaded'});await page.getByText(/Selamat datang kembali/).waitFor({timeout:15000})
+  await page.goto(base+'/admin.html',{waitUntil:'domcontentloaded'});await page.locator('.admin-login input[type=password]').waitFor({timeout:15000})
   const admOver=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
   if(admOver>2)problems.push(`${size.name}: admin login overflow ${admOver}px`)
   await context.close()
