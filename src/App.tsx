@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-import { ArrowRight, ArrowUpRight, Check, ChevronRight, Coffee, Leaf, MapPin, Menu, Minus, Plus, ShoppingBag, Trash2, X, Loader2, ShieldCheck, MessageCircle, Mail, PackageCheck } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Check, ChevronRight, Coffee, Menu, Minus, Plus, ShoppingBag, Trash2, X, Loader2, ShieldCheck, MessageCircle, Mail, PackageCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input, Textarea } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet'
