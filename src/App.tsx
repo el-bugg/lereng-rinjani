@@ -61,23 +61,32 @@ function Header({page,cartCount,onCart}:{page:Page,cartCount:number,onCart:()=>v
   </>
 }
 function Home({products,productLoading,onAdd}:{products:Product[],productLoading:boolean,onAdd:(id:string)=>void}){
+ const reduced=useReducedMotion()
  return <>
-  <section className="hero shell" aria-labelledby="hero-title">
-    <Reveal className="hero-copy"><span className="eyebrow"><span className="dot"/> ORIGIN / SEMBALUN, LOMBOK</span>
-      <h1 id="hero-title">Dari lereng.<br/><em>Untuk rasa</em><br/>yang bermakna.</h1>
-      <p>Kopi Arabika dan Robusta pilihan dari Sembalun, tumbuh di kaki Gunung Rinjani. Cerita tentang tanah, petani, dan setiap cangkir yang kita nikmati.</p>
-      <div className="hero-actions"><Button size="lg" onClick={()=>navigate('produk')}>Jelajahi kopi kami <ArrowUpRight size={20}/></Button><a className="text-link" href="#cerita">Cerita di balik kopi <ArrowRight size={18}/></a></div>
-      <div className="hero-foot"><span>01 / 03</span><i/><span>KOPI LOKAL · KARAKTER ASLI</span></div>
-    </Reveal>
-    <Reveal className="hero-media" delay={.12}><div className="hero-image-mask"><motion.img src={PHOTO(2)} alt="Panorama kebun kopi di lereng Rinjani, dokumentasi asli Lereng Rinjani" fetchPriority="high" whileHover={{scale:1.035}} transition={{duration:.8}}/></div><div className="hero-image-label"><MapPin size={15}/> SEMBALUN, NUSA TENGGARA BARAT</div><div className="hero-stamp"><span>GROWN AT THE</span><b>FOOT OF<br/>RINJANI</b><span>INDONESIAN COFFEE</span></div></Reveal>
-  </section>
-  <div className="marquee" aria-label="Kopi dari Sembalun"><div className="marquee-inner">{Array.from({length:4},(_,i)=><span key={i}>SEM BALUN <span className="marquee-sep">✦</span> ARABIKA <span className="marquee-sep">✦</span> ROBUSTA <span className="marquee-sep">✦</span> LERENG RINJANI <span className="marquee-sep">✦</span> </span>)}</div></div>
-  <section className="section shell"><Reveal><SectionHeading eyebrow="01 / PILIHAN KAMI" title={<>Dua karakter.<br/><em>Satu tempat asal.</em></>} description="Dari aroma yang lembut sampai rasa yang tegas, temukan kopi yang paling dekat dengan seleramu." side={<a className="text-link" href="#produk">Lihat semua produk <ArrowUpRight size={17}/></a>}/></Reveal>
-    <ProductGrid products={products} loading={productLoading} onAdd={onAdd}/>
-  </section>
-  <section className="origin-section"><div className="shell origin-grid"><Reveal className="origin-visual"><img src={PHOTO(6)} alt="Dokumentasi kegiatan kopi dan petani di Sembalun" loading="lazy"/><span className="image-index">02 — THE ORIGIN</span></Reveal><Reveal className="origin-copy" delay={.08}><span className="eyebrow">02 / CERITA ASAL</span><h2>Lebih dari <em>sekadar</em> kopi.</h2><p>Di Sembalun, lanskap pegunungan dan kerja para petani membentuk perjalanan setiap biji. Lereng Rinjani hadir untuk membawa kisah tersebut lebih dekat kepada pencinta kopi.</p><div className="origin-values"><div><Leaf size={20}/><span>Berakar di tanah Sembalun</span></div><div><Coffee size={20}/><span>Arabika & Robusta pilihan</span></div><div><MapPin size={20}/><span>Lombok Timur, Nusa Tenggara Barat</span></div></div><Button variant="outline" onClick={()=>navigate('cerita')}>Kenali cerita kami <ArrowUpRight size={18}/></Button></Reveal></div></section>
-  <section className="section shell compact-section"><Reveal><div className="quote-panel"><div className="quote-icon">“</div><blockquote>Setiap biji membawa jejak tanah tempat ia tumbuh, dan cerita orang-orang yang merawatnya.</blockquote><span>LERENG RINJANI — ANJANI CORP</span></div></Reveal></section>
-  <section className="bottom-cta"><div className="shell bottom-cta-inner"><Reveal><span className="eyebrow">SEDUH CERITANYA</span><h2>Mulai dari<br/><em>cangkir pertamamu.</em></h2><p>Temukan karakter Arabika dan Robusta khas Sembalun.</p><Button variant="accent" size="lg" onClick={()=>navigate('produk')}>Pilih kopi sekarang <ArrowUpRight size={20}/></Button></Reveal><img src={PHOTO(4)} alt="Kemasan asli kopi Lereng Rinjani Arabika" loading="lazy"/></div></section>
+   <section className="immersive-hero" aria-labelledby="hero-title">
+     <motion.img className="immersive-landscape" src={PHOTO(8)} alt="" aria-hidden="true" fetchPriority="high"
+       initial={reduced?false:{scale:1.13,opacity:.6}} animate={{scale:1,opacity:1}} transition={{duration:1.65,ease:[.22,1,.36,1]}}/>
+     <div className="immersive-shade" aria-hidden="true"/>
+     <div className="shell immersive-content">
+       <motion.div className="immersive-copy" initial={reduced?false:{opacity:0,y:38}} animate={{opacity:1,y:0}} transition={{duration:.95,delay:.14,ease:[.22,1,.36,1]}}>
+         <span className="immersive-kicker"><span className="spark"/> DARI TANAH SEMBALUN · LOMBOK TIMUR</span>
+         <h1 id="hero-title">Rinjani,<br/><span>di setiap</span><br/><em>seduhan.</em></h1>
+         <div className="immersive-intro"><p>Arabika dan Robusta pilihan dari kaki Gunung Rinjani. Sederhana dalam cerita, berkarakter dalam rasa.</p><Button size="lg" onClick={()=>navigate('produk')}>Temukan kopimu <ArrowUpRight size={19}/></Button></div>
+       </motion.div>
+       <motion.aside className="field-notes" aria-label="Catatan asal kopi" initial={reduced?false:{opacity:0,x:28}} animate={{opacity:1,x:0}} transition={{duration:.9,delay:.38}}>
+         <div className="field-notes-head"><span>CATATAN LERENG</span><b>001 / ORIGIN</b></div>
+         <div className="field-notes-photo"><img src={PHOTO(6)} alt="Proses penjemuran buah kopi dari dokumentasi Lereng Rinjani"/></div>
+         <div className="field-notes-body"><span>DI KAKI GUNUNG RINJANI</span><p>Berawal dari lahan, dirawat oleh tangan-tangan yang mengenalnya.</p><a href="#cerita">Kenali asal kami <ArrowUpRight size={17}/></a></div>
+       </motion.aside>
+     </div>
+     <div className="immersive-bottom shell"><span>SEMBALUN / LOMBOK TIMUR</span><a href="#produk">SCROLL UNTUK JELAJAHI <ArrowRight size={16}/></a><span>01 — 04</span></div>
+   </section>
+   <div className="kinetic-band" aria-label="Lereng Rinjani, kopi Arabika dan Robusta"><div className="kinetic-track" aria-hidden="true">{Array.from({length:6},(_,i)=><span key={i}>LERENG RINJANI <i>✳</i> SEMBALUN <i>✳</i> ARABIKA & ROBUSTA <i>✳</i> </span>)}</div></div>
+   <section className="editorial-intro shell" aria-label="Keunikan kopi kami"><Reveal className="editorial-left"><span className="eyebrow">01 / KOLEKSI PILIHAN</span><div className="editorial-serial">DARI KAKI RINJANI<br/>UNTUK SETIAP CANGKIR</div></Reveal><Reveal className="editorial-right" delay={.08}><h2>Kenali rasa.<br/><em>Temukan ceritanya.</em></h2><p>Dua pilihan kopi, satu tempat asal. Jelajahi biji yang sesuai dengan caramu menikmati hari.</p></Reveal></section>
+   <section className="collection-stage"><div className="shell"><Reveal><SectionHeading eyebrow="THE COLLECTION / 02 PILIHAN" title={<>Dua karakter.<br/><em>Satu lereng.</em></>} side={<a className="text-link" href="#produk">Detail semua produk <ArrowUpRight size={17}/></a>}/></Reveal><ProductGrid products={products} loading={productLoading} onAdd={onAdd}/></div></section>
+   <section className="story-collage" aria-labelledby="story-collage-heading"><div className="shell story-collage-grid"><Reveal className="story-collage-visual"><div className="story-image-primary"><img src={PHOTO(3)} alt="Petani kopi di kawasan Sembalun dari dokumentasi asli" loading="lazy"/><span>02 / DI BALIK BIJI</span></div><div className="story-image-secondary"><img src={PHOTO(2)} alt="Panorama kebun kopi dari lereng Rinjani" loading="lazy"/></div></Reveal><Reveal className="story-collage-text" delay={.14}><span className="eyebrow">02 / ASAL & PERJALANAN</span><h2 id="story-collage-heading">Bukan hanya<br/>tentang <em>kopi.</em></h2><p>Ada tanah Sembalun, perjalanan kebun, dan kerja petani dalam cerita Lereng Rinjani. Kami ingin menghadirkan pengalaman menikmati kopi yang dekat dengan asalnya.</p><div className="story-facts"><div><b>02</b><span>Karakter kopi</span></div><div><b>100<small>g</small></b><span>Per kemasan</span></div></div><Button variant="outline" onClick={()=>navigate('cerita')}>Jelajahi cerita kami <ArrowUpRight size={18}/></Button></Reveal></div></section>
+   <section className="manifesto-section"><div className="shell"><Reveal><div className="manifesto-top"><span>03 / PESAN DARI LERENG</span><span>ARABIKA · ROBUSTA</span></div><blockquote>Rasa yang baik<br/>punya <em>asal yang jelas.</em></blockquote><div className="manifesto-bottom"><span>LERENG RINJANI — ANJANI CORP</span><a href="#artikel">Baca jurnal kopi <ArrowUpRight size={19}/></a></div></Reveal></div></section>
+   <section className="final-pick"><div className="shell final-pick-grid"><Reveal className="final-pick-copy"><span className="eyebrow">04 / WAKTUNYA MENYEDUH</span><h2>Mulai cerita<br/><em>dari sini.</em></h2><p>Pilih Arabika atau Robusta untuk menikmati perjalanan rasa dari Sembalun.</p><Button size="lg" onClick={()=>navigate('produk')}>Pilih kopi sekarang <ArrowUpRight size={19}/></Button></Reveal><Reveal className="final-pick-photo" delay={.12}><img src={PHOTO(4)} alt="Produk Arabika Lereng Rinjani dalam kemasan asli" loading="lazy"/><span>100 GRAM / KOPI PILIHAN</span></Reveal></div></section>
  </>
 }
 function ProductGrid({products,loading,onAdd}:{products:Product[],loading:boolean,onAdd:(id:string)=>void}){
