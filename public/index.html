@@ -36,4 +36,15 @@ function route(){const page=decodeURIComponent(location.hash.slice(1))||'beranda
 window.addEventListener('hashchange',route);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCart()});
 document.getElementById('checkout-form').addEventListener('submit',async e=>{e.preventDefault();const r=rows();if(!r.length){alert('Keranjang masih kosong.');location.hash='#produk';return}const f=e.currentTarget;if(!f.reportValidity())return;const d=new FormData(f);const button=f.querySelector('[type=submit]');button.disabled=true;button.textContent='Menyimpan pesanan...';try{const response=await fetch('/api/orders',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:d.get('name'),phone:d.get('phone'),address:d.get('address'),notes:d.get('notes'),consent:true,items:r.map(([id,quantity])=>({id,quantity}))})});const order=await response.json();if(!response.ok)throw Error(order.error||'Pesanan gagal disimpan.');if(!order.order_code||!order.whatsapp_url)throw Error('Respons pesanan tidak lengkap');cart={};save();alert('Pesanan '+order.order_code+' tercatat. Lanjutkan ke WhatsApp untuk konfirmasi pembayaran dan pengiriman.');location.href=order.whatsapp_url;}catch(error){alert(error.message+' Silakan coba kembali.')}finally{button.disabled=false;button.textContent='Catat pesanan & konfirmasi WhatsApp ↗'}});
 renderCart();route();
+</script><script type="module">
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+ try{
+  const {animate,inView}=await import('https://cdn.jsdelivr.net/npm/motion@14.11.1/+esm');
+  const hero=document.querySelector('.hero-copy');
+  if(hero)animate(hero,{opacity:[0,1],transform:['translateY(18px)','translateY(0px)']},{duration:.7,easing:'ease-out'});
+  inView('.section-head, .product, .content-card',element=>{
+   animate(element,{opacity:[.7,1],transform:['translateY(12px)','translateY(0px)']},{duration:.6,easing:'ease-out'});
+  },{amount:.15});
+ }catch(error){console.info('Optional motion effect unavailable')}
+}
 </script></body></html>
