@@ -1,0 +1,35 @@
+name: Lereng Rinjani QA
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'server.mjs'
+      - 'public/**'
+      - 'tests/**'
+      - '.github/workflows/qa.yml'
+      - 'package.json'
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run browser and API checks
+        env:
+          TARGET_URL: https://lereng-rinjani-fullstack-3r6n.onrender.com
+        run: node tests/browser-smoke.mjs
+      - name: Save desktop and mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lereng-rinjani-screenshots
+          path: screenshots/
+          if-no-files-found: ignore
