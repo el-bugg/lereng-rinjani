@@ -17,8 +17,16 @@ if(process.env.TEST_ORDER==='1') {
  if(r.status!==201||!/^LR-/.test(data.order_code||'')||data.subtotal_idr!==45000||!data.whatsapp_url?.startsWith('https://wa.me/'))throw Error('Valid order failed: '+r.status+' '+JSON.stringify(data));
  console.log('PASS: saved a synthetic order to PostgreSQL, reference '+data.order_code);
 }
-const protectedReq=await fetch(url+'/api/admin/orders');
-if(protectedReq.status!==401)throw Error('Admin access must return 401');
+let protectedReq; 
+for(let attempt=0;attempt<12;attempt++){
+ try{
+  protectedReq=await fetch(url+'/api/admin/orders',{headers:{'cache-control':'no-cache'}});
+  if(protectedReq.status===401)break;
+  if(![502,503,504,429].includes(protectedReq.status))throw Error('Admin must return 401 but got '+protectedReq.status+' '+(await protectedReq.text()).slice(0,300));
+ }catch(error){if(attempt===11)throw error;}
+ await new Promise(resolve=>setTimeout(resolve,2500));
+}
+if(protectedReq?.status!==401)throw Error('Admin access must return 401 but got '+protectedReq?.status);
 const browser=await chromium.launch({headless:true});
 try{
  const desktop=await browser.newContext({viewport:{width:1440,height:900}});
