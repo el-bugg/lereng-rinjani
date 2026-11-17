@@ -21,6 +21,9 @@ jobs:
           PORT=10000 PREVIEW_ADMIN_PASSWORD=ci-only-password npm start > /tmp/lereng-preview.log 2>&1 &
           for i in $(seq 1 60); do curl -fsS http://localhost:10000/api/health >/dev/null && break || sleep 1; done
           node tests/browser-check.mjs
+      - run: node tests/live-smoke.mjs
+        env:
+          PREVIEW_URL: https://lereng-rinjani-redesign-preview-v2.onrender.com
       - uses: actions/upload-artifact@v4
         if: always()
         with:
