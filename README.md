@@ -39,8 +39,8 @@ Jangan menyimpan kredensial di repository.
 - Pesanan dicatat pada PostgreSQL dan kemudian diarahkan ke WhatsApp untuk konfirmasi. Pembayaran dan pengiriman dilakukan manual setelah persetujuan admin.
 - Database PostgreSQL gratis Render akan **kedaluwarsa 17 Desember 2026**, sehingga **tidak layak menjadi penyimpanan order produksi permanen**. Migrasikan ke paket database persisten dan siapkan backup sebelum menerima transaksi nyata.
 - URL utama dapat melambat saat Render Free instance tertidur.
-- Foto yang sekarang tampil dari Unsplash adalah ilustrasi sementara, **belum foto asli yang disertakan di arsip website**. Foto merek asli harus diunggah sebelum situs digunakan resmi.
-- Profil lengkap perusahaan, mitra, dan klaim ekspor belum semuanya diunggah karena perlu verifikasi pemilik.
+- Delapan foto asli proyek telah disimpan di `public/assets/img/`. Hero, kisah kopi, dan katalog menggunakan foto dari arsip yang kamu kirim.
+- Profil lengkap perusahaan, mitra, dan klaim ekspor perlu diverifikasi pemilik. Halaman Cerita Kami sengaja menghindari klaim yang belum terkonfirmasi.
 - Rencana React, shadcn/ui, Motion belum diterapkan. Frontend sekarang berupa HTML/CSS/JavaScript agar demo online tidak bergantung pada build kompleks.
 - Pelanggan hanya boleh menganggap pesanan diterima sesudah memperoleh nomor order dan konfirmasi admin.
 - Jangan gunakan situs untuk pembayaran otomatis atau data sensitif tanpa pengujian keamanan independen dan kebijakan privasi final.
