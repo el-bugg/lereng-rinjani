@@ -23,6 +23,7 @@ try{
  if(await page.locator('#cart-count').textContent()!=='1')throw Error('Cart did not update');
  await page.reload({waitUntil:'networkidle'});
  if(await page.locator('#cart-count').textContent()!=='1')throw Error('Cart not persisted');
+ await page.locator('#cart-button').click();
  await page.locator('#cart-close').click();
  await page.goto(url+'/#checkout',{waitUntil:'networkidle'});
  if(!await page.locator('#checkout-form').isVisible())throw Error('Checkout missing');
