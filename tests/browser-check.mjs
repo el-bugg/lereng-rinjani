@@ -58,7 +58,7 @@ try{
    if(vp.width<=930){
     const trigger=page.getByRole('button',{name:'Buka menu'})
     assert(await trigger.isVisible(),`${label}: mobile menu trigger hidden`)
-    await trigger.click();const nav=page.getByRole('navigation',{name:'Navigasi seluler'});await nav.waitFor()
+    await trigger.click();const nav=page.getByRole('navigation',{name:'Navigasi seluler'});await nav.waitFor();await page.waitForTimeout(380)
     const offsets=await page.evaluate(()=>({header:document.querySelector('.site-header')?.getBoundingClientRect().bottom,menu:document.querySelector('.mobile-navigation')?.getBoundingClientRect().top}))
     if(offsets.header!==undefined&&offsets.menu!==undefined&&Math.abs(offsets.header-offsets.menu)>5)issues.push(`${label}: mobile menu displaced ${JSON.stringify(offsets)}`)
     await nav.getByRole('link',{name:/Produk/}).click()
