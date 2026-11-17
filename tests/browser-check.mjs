@@ -1,4 +1,4 @@
-import { chromium } from 'playwright'
+import { chromium, firefox, webkit } from 'playwright'
 import assert from 'node:assert/strict'
 import { mkdir } from 'node:fs/promises'
 const base=process.env.PREVIEW_URL||'http://127.0.0.1:10000'
@@ -22,8 +22,29 @@ try{
   await page.getByLabel('Alamat pengiriman').fill('Jalan Raya Sembalun, Kecamatan Sembalun, Lombok Timur')
   await page.getByRole('button',{name:/Catat pesanan/}).click();await page.getByText(/Pesanan diterima/).waitFor({timeout:15000})
   if(size.name==='android-390')await page.screenshot({path:'screenshots/android-checkout-done.png',fullPage:true})
+  for(const route of ['cerita','artikel','bantuan','privasi']){
+   await page.goto(base+'/#'+route,{waitUntil:'domcontentloaded'});await page.locator('main h1').first().waitFor();
+   const extra=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
+   if(extra>2)problems.push(`${size.name}: route ${route} overflow ${extra}px`)
+  }
+  await page.goto(base+'/admin.html',{waitUntil:'domcontentloaded'});await page.getByText(/Selamat datang kembali/).waitFor({timeout:15000})
+  const admOver=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
+  if(admOver>2)problems.push(`${size.name}: admin login overflow ${admOver}px`)
   await context.close()
  }
+ for(const [name,type] of [['firefox',firefox],['webkit',webkit]]){
+  const alt=await type.launch({headless:true})
+  try {for(const width of [390,1280]){
+    const ctx=await alt.newContext({viewport:{width,height:850},reducedMotion:'reduce'})
+    const page=await ctx.newPage()
+    page.on('pageerror',e=>problems.push(`${name}-${width}: ${e.message}`))
+    await page.goto(base+'/#produk',{waitUntil:'domcontentloaded',timeout:90000})
+    await page.locator('.product-card').first().waitFor({timeout:15000})
+    const over=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
+    if(over>2)problems.push(`${name}-${width}: overflow ${over}px`)
+    await ctx.close()
+  }} finally{await alt.close()}
+ }
  if(problems.length)throw Error(problems.join('\n'))
- console.log('Browser tests passed:',sizes.map(x=>x.name).join(', '),'plus full checkout path')
+ console.log('Browser tests passed: Chromium responsive 320,390,768,1280,1920 + page routes, admin, checkout; Firefox and WebKit 390/1280')
 }finally{await browser.close()}
