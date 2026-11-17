@@ -1,0 +1,28 @@
+name: Redesign preview QA
+on:
+  push:
+    branches: [redesign-motion-v2]
+  pull_request:
+    branches: [main]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+      - run: npm run test:api
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          PORT=10000 PREVIEW_ADMIN_PASSWORD=ci-only-password npm start > /tmp/lereng-preview.log 2>&1 &
+          for i in $(seq 1 60); do curl -fsS http://localhost:10000/api/health >/dev/null && break || sleep 1; done
+          node tests/browser-check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: redesign-screenshots
+          path: screenshots/
