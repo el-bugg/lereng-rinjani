@@ -11,7 +11,7 @@ try{
   await page.goto(base,{waitUntil:'domcontentloaded',timeout:90000});await page.locator('.product-card').first().waitFor({timeout:15000});await page.locator('#hero-title').waitFor()
   const over=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);if(over>2)problems.push(`${size.name}: horizontal overflow ${over}px`)
   if(['android-390','desktop-1920'].includes(size.name))await page.screenshot({path:`screenshots/${size.name}.png`,fullPage:true})
-  if(size.width<740){await page.getByRole('button',{name:'Buka menu'}).click();await page.getByRole('navigation',{name:'Navigasi seluler'}).getByRole('link',{name:/Produk/}).click()}
+  if(size.width<930){await page.getByRole('button',{name:'Buka menu'}).click();await page.getByRole('navigation',{name:'Navigasi seluler'}).getByRole('link',{name:/Produk/}).click()}
   else await page.getByRole('navigation',{name:'Navigasi utama'}).getByRole('link',{name:'Produk'}).click()
   await page.locator('.product-card').first().waitFor()
   await page.getByRole('button',{name:/Tambah ke keranjang/}).first().click();await page.locator('[role=dialog]').waitFor()
