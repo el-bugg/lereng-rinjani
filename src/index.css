@@ -291,3 +291,20 @@ h1,h2,h3,blockquote{text-wrap:balance;overflow-wrap:normal}
 @media(min-width:931px){.site-header .menu-trigger{display:none!important}}
 @media(max-width:930px){.site-header .menu-trigger{display:inline-flex!important}}
 @media(max-width:740px){.immersive-hero .field-notes{display:grid!important;opacity:1;visibility:visible;max-width:550px}}
+
+/* V4 mobile card QA: keep the image and readable copy in separate, non-overlapping areas. */
+@media(min-width:481px) and (max-width:740px){
+ .immersive-hero .field-notes{grid-template-columns:minmax(0,40%) minmax(0,1fr);align-items:stretch}
+ .immersive-hero .field-notes-photo{width:100%;height:100%!important;min-height:0!important;aspect-ratio:auto!important;align-self:stretch}
+ .immersive-hero .field-notes-photo img{width:100%;height:100%;object-fit:cover}
+ .immersive-hero .field-notes-body{min-width:0}
+}
+@media(max-width:480px){
+ .immersive-hero .field-notes{display:flex!important;flex-direction:column;align-items:stretch;gap:0}
+ .immersive-hero .field-notes-head{width:100%;display:flex;flex-wrap:wrap}
+ .immersive-hero .field-notes-photo{display:block;width:100%;height:clamp(170px,49vw,230px)!important;aspect-ratio:auto!important;min-height:0!important;overflow:hidden}
+ .immersive-hero .field-notes-photo img{width:100%;height:100%;object-fit:cover}
+ .immersive-hero .field-notes-body{display:block;padding:18px 10px 16px;min-width:0}
+ .immersive-hero .field-notes-body p{font-size:clamp(1.22rem,5.8vw,1.6rem);line-height:1.35;margin:9px 0 16px}
+ .immersive-hero .field-notes-body a{display:inline-flex;font-size:.76rem;line-height:1.4}
+}

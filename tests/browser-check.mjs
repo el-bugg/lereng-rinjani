@@ -54,6 +54,7 @@ try{
    await layout(page,label+'/beranda')
    if(vp.width>930 && await page.getByRole('button',{name:'Buka menu'}).isVisible())issues.push(`${label}: desktop navigation shows duplicate mobile hamburger`)
    if(vp.width<=740 && !(await page.locator('.field-notes').isVisible()))issues.push(`${label}: origin photo card missing on mobile`)
+   if(vp.width<=740){const overlap=await page.evaluate(()=>{const p=document.querySelector('.field-notes-photo')?.getBoundingClientRect(),b=document.querySelector('.field-notes-body')?.getBoundingClientRect();if(!p||!b)return 0;return Math.max(0,Math.min(p.right,b.right)-Math.max(p.left,b.left))*Math.max(0,Math.min(p.bottom,b.bottom)-Math.max(p.top,b.top))});if(overlap>20)issues.push(`${label}: origin photo and description overlap (${overlap.toFixed(0)}px²)`)}
    if(['small-320','android-390','tablet-768','desktop-1440','desktop-1920','wide-2560'].includes(label)){
     await page.screenshot({path:`screenshots/${label}.png`,fullPage:true})
    }
