@@ -26,8 +26,8 @@ try{
  await page.locator('h1').first().waitFor();if(!await page.locator('.links a').first().isVisible())throw Error('Desktop menu hidden');
  const photoLoaded=await page.locator('.hero-photo img').evaluate(img=>img.complete&&img.naturalWidth>0&&img.currentSrc.includes('/assets/img/foto2.jpg'));
  if(!photoLoaded)throw Error('Original hero image did not load');
- for(const img of await page.locator('.product-image img').all()){await img.scrollIntoViewIfNeeded();await img.evaluate(el=>el.decode()).catch(()=>{});}
- const productsLoaded=await page.locator('.product-image img').evaluateAll(imgs=>imgs.length>=2&&imgs.every(img=>img.complete&&img.naturalWidth>0&&img.currentSrc.includes('/assets/img/')));
+ for(const img of await page.locator('#page-beranda .product-image img').all()){await img.scrollIntoViewIfNeeded();await img.evaluate(el=>el.decode()).catch(()=>{});}
+ const productsLoaded=await page.locator('#page-beranda .product-image img').evaluateAll(imgs=>imgs.length>=2&&imgs.every(img=>img.complete&&img.naturalWidth>0&&img.currentSrc.includes('/assets/img/')));
  if(!productsLoaded)throw Error('Original product images did not load');
  await page.screenshot({path:'screenshots/desktop.png',fullPage:true});
  await page.locator('[data-add="arabika"]').first().click();
