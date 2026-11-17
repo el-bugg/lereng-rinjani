@@ -26,11 +26,11 @@ try{
   await form.getByLabel('Stok (kosong = manual)').fill('6')
   const capture=await page.screenshot()
   await form.locator('input[type=file]').setInputFiles({name:'admin-test.png',mimeType:'image/png',buffer:capture})
-  await page.waitForFunction(()=>{const src=document.querySelector('form input[type=file]')?.closest('label')?.parentElement?.querySelector('img')?.getAttribute('src');return !!src&&src.includes('/api/media/')},{timeout:25000}).catch(()=>{})
+  await page.waitForFunction(()=>[...document.querySelectorAll('form img')].some(img=>img.getAttribute('src')?.includes('/api/media/')),null,{timeout:25000})
   await form.getByRole('button',{name:/Simpan produk baru/}).click()
   await page.getByText(/Produk tersimpan/).waitFor({timeout:15000})
   const data=await page.evaluate(async()=>await (await fetch('/api/products')).json())
-  assert(data.products.some(p=>p.name==='Kopi Uji Admin '+width),'New product missing from catalog API')
+  const added=data.products.find(p=>p.name==='Kopi Uji Admin '+width);assert(added,'New product missing from catalog API');assert(added.image.startsWith('/api/media/'),'Uploaded photo was not saved with the product');assert((await page.request.get(base+added.image)).ok(),'Uploaded photo endpoint failed')
   assert.equal(errors.length,0,'Browser errors: '+errors.join('; '))
   await context.close()
  }
