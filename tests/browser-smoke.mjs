@@ -11,6 +11,12 @@ const products=await fetch(url+'/api/products').then(r=>r.json());
 if(products.products?.length!==2)throw Error('Expected two products');
 const bad=await fetch(url+'/api/orders',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({})});
 if(bad.status!==400)throw Error('Bad order must return 400 but got '+bad.status);
+if(process.env.TEST_ORDER==='1') {
+ const r=await fetch(url+'/api/orders',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:'QA TEST - bukan pelanggan',phone:'081234567890',address:'Alamat dummy untuk pengujian otomatis di Jakarta',notes:'Hanya pengujian, jangan diproses atau dikirim',consent:true,items:[{id:'arabika',quantity:1}]})});
+ const data=await r.json();
+ if(r.status!==201||!/^LR-/.test(data.order_code||'')||data.subtotal_idr!==45000||!data.whatsapp_url?.startsWith('https://wa.me/'))throw Error('Valid order failed: '+r.status+' '+JSON.stringify(data));
+ console.log('PASS: saved a synthetic order to PostgreSQL, reference '+data.order_code);
+}
 const protectedReq=await fetch(url+'/api/admin/orders');
 if(protectedReq.status!==401)throw Error('Admin access must return 401');
 const browser=await chromium.launch({headless:true});
