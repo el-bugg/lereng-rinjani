@@ -4,6 +4,7 @@
  * Production uses the existing server.mjs + PostgreSQL after explicit approval.
  */
 import http from 'node:http'
+import {installCMS,cms} from './cms-preview.mjs'
 import { DatabaseSync } from 'node:sqlite'
 import { randomBytes, randomUUID, timingSafeEqual } from 'node:crypto'
 import { readFile, stat } from 'node:fs/promises'
@@ -23,16 +24,18 @@ const transitions={MENUNGGU_KONFIRMASI:['DIKONFIRMASI','DIBATALKAN'],DIKONFIRMAS
 db.exec(`CREATE TABLE products (id TEXT PRIMARY KEY,name TEXT NOT NULL,price_idr INTEGER NOT NULL,stock INTEGER,enabled INTEGER NOT NULL DEFAULT 1);
 CREATE TABLE orders (id TEXT PRIMARY KEY,order_code TEXT UNIQUE NOT NULL,customer_name TEXT NOT NULL,customer_phone TEXT NOT NULL,delivery_address TEXT NOT NULL,notes TEXT NOT NULL DEFAULT '',items TEXT NOT NULL,total_idr INTEGER NOT NULL,status TEXT NOT NULL DEFAULT 'MENUNGGU_KONFIRMASI',created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
 INSERT INTO products(id,name,price_idr,stock) VALUES('arabika','Lereng Rinjani Arabika',45000,20),('robusta','Lereng Rinjani Robusta',45000,20);`)
+installCMS(db)
 function send(res,code,data,headers={}){res.writeHead(code,{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','x-robots-tag':'noindex, nofollow',...headers});res.end(JSON.stringify(data))}
 function bad(message,code=400){const e=new Error(message);e.status=code;throw e}
 function clean(v,min,max,label){if(typeof v!=='string')bad(`${label} harus berupa teks`);const s=v.trim().replace(/[\u0000-\u001F]/g,' ');if(s.length<min||s.length>max)bad(`${label} tidak valid`);return s}
-async function getBody(req){let s='';for await(const c of req){s+=c;if(s.length>65000)bad('Payload terlalu besar',413)}try{return JSON.parse(s)}catch{bad('JSON tidak valid')}}
+async function getBody(req,max=65000){let s='';for await(const c of req){s+=c;if(s.length>max)bad('Payload terlalu besar',413)}try{return JSON.parse(s)}catch{bad('JSON tidak valid')}}
 function throttle(key,limit=12,period=900000){const now=Date.now();const state=limits.get(key);if(!state||state.until<now){limits.set(key,{count:1,until:now+period});return true}state.count++;return state.count<=limit}
 function session(req){const cookie=req.headers.cookie||'';const token=/(?:^|;\s*)lr_preview_session=([a-f0-9]{48})/.exec(cookie)?.[1];return !!(token&&activeSessions.get(token)>Date.now())}
 function adminGuard(req){if(!session(req))bad('Akses admin diperlukan',401)}
 function samePassword(value){if(typeof value!=='string'||!adminPassword)return false;const a=Buffer.from(value);const b=Buffer.from(adminPassword);return a.length===b.length&&timingSafeEqual(a,b)}
-function products(){return db.prepare('SELECT id,name,price_idr,stock,enabled FROM products ORDER BY id').all().map(x=>({...x,enabled:!!x.enabled}))}
+function products(){return db.prepare('SELECT id,name,description,image,price_idr,stock,enabled FROM products ORDER BY rowid').all().map(x=>({...x,enabled:!!x.enabled}))}
 async function api(req,res,path){const method=req.method;
+ if(await cms(req,res,path,{db,send,body:getBody,adminGuard}))return;
  if(path==='/api/health'&&method==='GET')return send(res,200,{ok:true,mode:'preview-sqlite',warning:'Data pesanan uji tidak permanen'})
  if(path==='/api/products'&&method==='GET')return send(res,200,{products:products()})
  if(path==='/api/orders'&&method==='POST'){
@@ -40,9 +43,9 @@ async function api(req,res,path){const method=req.method;
   const d=await getBody(req);if(d.consent!==true)bad('Persetujuan penggunaan data diperlukan')
   const name=clean(d.name,3,80,'Nama');const phone=clean(d.phone,9,20,'Telepon').replace(/[\s-]/g,'');if(!/^(?:\+62|62|0)[0-9]{8,13}$/.test(phone))bad('Nomor WhatsApp tidak valid')
   const address=clean(d.address,12,500,'Alamat');const notes=typeof d.notes==='string'&&d.notes.trim()?clean(d.notes,1,300,'Catatan'):''
-  if(!Array.isArray(d.items)||!d.items.length||d.items.length>2)bad('Produk pesanan tidak valid')
+  if(!Array.isArray(d.items)||!d.items.length||d.items.length>12)bad('Produk pesanan tidak valid')
   let total=0;const items=[];const seen=new Set()
-  for(const item of d.items){if(!item||!['arabika','robusta'].includes(item.id)||!Number.isInteger(item.quantity)||item.quantity<1||item.quantity>20||seen.has(item.id))bad('Produk atau jumlah tidak valid');seen.add(item.id)
+  for(const item of d.items){if(!item||typeof item.id!=='string'||!/^[a-z0-9-]{2,40}$/.test(item.id)||!Number.isInteger(item.quantity)||item.quantity<1||item.quantity>20||seen.has(item.id))bad('Produk atau jumlah tidak valid');seen.add(item.id)
    const prod=db.prepare('SELECT * FROM products WHERE id=?').get(item.id);if(!prod||!prod.enabled)bad('Produk tidak tersedia');if(prod.stock!==null&&item.quantity>prod.stock)bad('Stok tidak mencukupi',409)
    total+=prod.price_idr*item.quantity;items.push({product_id:prod.id,product_name:prod.name,quantity:item.quantity,unit_price_idr:prod.price_idr})
   }
