@@ -25,7 +25,6 @@ jobs:
       - name: Run browser and API checks
         env:
           TARGET_URL: https://lereng-rinjani-fullstack-3r6n.onrender.com
-          TEST_ORDER: '1'
         run: node tests/browser-smoke.mjs
       - name: Save desktop and mobile screenshots
         if: always()
